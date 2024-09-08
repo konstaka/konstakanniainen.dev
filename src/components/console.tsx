@@ -110,7 +110,7 @@ export default function Console({
 
   return (
     <div
-      className="flex-none max-w-3xl truncate whitespace-pre-line h-96 max-h-full border border-slate-100 bg-black text-white rounded-xl leading-tight text-xs font-[family-name:var(--font-geist-mono)]"
+      className="flex-none max-w-3xl truncate whitespace-pre-line h-96 max-h-full shadow-md border border-slate-100 bg-black text-white rounded-xl leading-tight text-xs font-[family-name:var(--font-geist-mono)]"
       onClick={(e) => {
         e.stopPropagation();
         setInputInFocus(true);

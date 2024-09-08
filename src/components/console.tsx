@@ -1,4 +1,27 @@
-import { Dispatch, RefObject, SetStateAction } from "react";
+import {
+  Dispatch,
+  ReactElement,
+  RefObject,
+  SetStateAction,
+  useState,
+} from "react";
+import { v4 as uuidv4 } from "uuid";
+
+const date = new Date();
+
+const prettyPrintDate = () => {
+  return `${date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  })} ${date.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  })}`;
+};
+
+const initialContent = "Welcome to my CV.";
+const prompt = "visitor@konstakanniainen.dev ~ $";
 
 export default function Console({
   inputRef,
@@ -9,8 +32,81 @@ export default function Console({
   inputInFocus: boolean;
   setInputInFocus: Dispatch<SetStateAction<boolean>>;
 }) {
-  const consoleContent: string[] = ["Welcome to my CV."];
-  const prompt = "visitor@konstakanniainen.dev ~ $";
+  const [consoleContent, setConsoleContent] = useState<ReactElement[]>([
+    <div key={initialContent}>{initialContent}</div>,
+  ]);
+  const [input, setInput] = useState("");
+
+  const pushToConsole = (content: ReactElement[]) => {
+    setConsoleContent([...consoleContent, ...content]);
+  };
+
+  const commands: { name: string; effect: () => ReactElement[] }[] = [
+    {
+      name: "ls",
+      effect: () =>
+        commands.map((command) => (
+          <div key={uuidv4()}>
+            -rwxr-xr-x 1 root wheel 154352 {prettyPrintDate()} {command.name}
+          </div>
+        )),
+    },
+    {
+      name: "this",
+      effect: () => [
+        <div key={uuidv4()}>
+          <a
+            href="https://github.com/konstaka/konstakanniainen.dev"
+            target="_blank"
+            className="hover:underline"
+          >
+            https://github.com/konstaka/konstakanniainen.dev
+          </a>
+        </div>,
+      ],
+    },
+    // { TU Delft line art logo
+    //   name: "education",
+    //   effect: () =>
+    //     commands.map(
+    //       (command) =>
+    //         `-rwxr-xr-x   1 root  wheel   154352 ${prettyPrintDate()} ${command.name}`,
+    //     ),
+    // },
+    // { // Talenom line art logo
+    //   name: "current",
+    //   effect: () =>
+    //     commands.map(
+    //       (command) =>
+    //         `-rwxr-xr-x   1 root  wheel   154352 ${prettyPrintDate()} ${command.name}`,
+    //     ),
+    // },
+    // { // CGI line art logo
+    //   name: "previous",
+    //   effect: () =>
+    //     commands.map(
+    //       (command) =>
+    //         `-rwxr-xr-x   1 root  wheel   154352 ${prettyPrintDate()} ${command.name}`,
+    //     ),
+    // },
+  ];
+
+  const commandHistory: string[] = [];
+
+  const executeCommand = (command: string) => {
+    const newLines = [
+      <div key={uuidv4()}>
+        {prompt} {command}
+      </div>,
+    ];
+    setInput("");
+    commandHistory.push(command);
+    const { effect } = commands.find(({ name }) => name === command) || {};
+    if (effect) {
+      newLines.push(...effect());
+    }
+    pushToConsole(newLines);
+  };
 
   return (
     <div
@@ -26,16 +122,23 @@ export default function Console({
         <div className="px-1">+</div>
       </div>
       <div className="p-2">
-        {consoleContent.join("\n")}
-        {"\n"}
-
+        {consoleContent}
         <div className="flex flex-row">
-          <div className="mr-2">{prompt}</div>
-          <input
-            type="text"
-            className="bg-black outline-none caret-transparent [field-sizing:content]"
-            ref={inputRef}
-          />
+          <div className="whitespace-pre">{prompt} </div>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              executeCommand(input);
+            }}
+          >
+            <input
+              type="text"
+              className="bg-black outline-none caret-transparent [field-sizing:content]"
+              ref={inputRef}
+              value={input}
+              onChange={(e) => setInput(e.currentTarget.value)}
+            />
+          </form>
           {inputInFocus ? (
             <div className="w-2 h-3.5 bg-white" />
           ) : (

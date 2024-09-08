@@ -2,14 +2,15 @@ import { Dispatch, RefObject, SetStateAction } from "react";
 
 export default function Console({
   inputRef,
+  inputInFocus,
   setInputInFocus,
 }: {
   inputRef: RefObject<HTMLInputElement>;
+  inputInFocus: boolean;
   setInputInFocus: Dispatch<SetStateAction<boolean>>;
 }) {
   const consoleContent: string[] = ["Welcome to my CV."];
   const prompt = "visitor@konstakanniainen.dev ~ $";
-  const cursor = "▋";
 
   return (
     <div
@@ -32,11 +33,14 @@ export default function Console({
           <div className="mr-2">{prompt}</div>
           <input
             type="text"
-            className="bg-black outline-none [field-sizing:content]"
-            placeholder="ls..."
+            className="bg-black outline-none caret-transparent [field-sizing:content]"
             ref={inputRef}
           />
-          <div>{cursor}</div>
+          {inputInFocus ? (
+            <div className="w-2 h-3.5 bg-white" />
+          ) : (
+            <div className="w-2 h-3.5 border" />
+          )}
         </div>
       </div>
     </div>

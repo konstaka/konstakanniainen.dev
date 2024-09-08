@@ -23,7 +23,11 @@ export default function Home() {
     >
       <Sidebar />
       <div className="flex-auto p-12 shadow-xl">
-        <Console inputRef={inputRef} setInputInFocus={setInputInFocus} />
+        <Console
+          inputRef={inputRef}
+          inputInFocus={inputInFocus}
+          setInputInFocus={setInputInFocus}
+        />
       </div>
     </div>
   );
